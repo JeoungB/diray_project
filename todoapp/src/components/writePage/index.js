@@ -1,29 +1,48 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addList } from "../../reducers/user";
+import axios from "axios";
 
-export const WritePage = () => {
+export const WritePage = ({token}) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
+  const {user} = useSelector((state) => state);
   const dispatch = useDispatch();
+  const WRITE_API = "http://localhost:8080/api/createMemo";
+  let day = new Date();
 
   // 새로운 메모
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     let newMemo = {
       id: Date.now(),
       title: title,
       content: content,
+      dateTime : day.toLocaleDateString(),
       important: false,
     };
 
-    dispatch(addList(newMemo));
+    if(user) {
+      console.log("게스트 유저 존재")
+      dispatch(addList(newMemo));
+    }
+
+    if(token) {
+      console.log("토큰 존재", token);
+      try{
+        await axios.post(WRITE_API, {
+          email : token.email,
+          content : newMemo,
+        })
+      } catch(err) {
+        console.log("write Err", err);
+      }
+    }
+
   };
 
   const { contents } = useSelector((state) => state);
-  console.log("contant:", contents);
 
   const textAreaStyle = {
     width: "100%",
@@ -47,7 +66,7 @@ export const WritePage = () => {
           placeholder="제목 입력"
           onChange={(event) => setTitle(event.target.value)}
         ></input>
-        <td style={writeStyle}>
+        <div style={writeStyle}>
         <textarea
           type="text"
           name="content"
@@ -56,7 +75,7 @@ export const WritePage = () => {
           onChange={(event) => setContent(event.target.value)}
           style={textAreaStyle}
         ></textarea>
-        </td>
+        </div>
         <input
           type="submit"
           name="submit"

@@ -67,6 +67,25 @@ app.post("/api/singin", async (req, res) => {
   }
 });
 
+// 메모 추가 ============================================================
+app.post("/api/createMemo", async (req, res) => {
+  const userEmail = req.body.email;
+  const content = req.body.content;
+  console.log("wirte Email", userEmail);
+  console.log("wirte content", content);
+  const sqlQuery = 
+  `INSERT INTO memo_list (title, content, date_time, email, important, memo_id) VALUE ('${content.title}', '${content.content}', '${content.dateTime}', '${userEmail}',${content.important}, ${content.id})`;
+    try {
+      db.query(await sqlQuery, (err, result) => {
+        if(err) throw err;
+        console.log("추가 완료");
+      });
+    } catch(err) {
+      console.log(err)
+    }
+  
+})
+
 // 이메일 중복 체크 ===================================================================
 app.post("/api/singin/emailcheck", async (req, res) => {
   try {
@@ -102,7 +121,7 @@ app.post("/api/login", async (req, res) => {
         const accessToken = jwt.sign({
           id: result[0].id,
           name: result[0].name,
-          password: result[0].password,
+          email: result[0].email,
         }, process.env.ACCESS_SECRET, {
           expiresIn: '1m',
           issuer: 'About Tech',
@@ -111,7 +130,7 @@ app.post("/api/login", async (req, res) => {
         const refreshToken = jwt.sign({
           id: result[0].id,
           name: result[0].name,
-          password: result[0].password,
+          email: result[0].email,
         }, process.env.REFRESH_SECRET, {
           expiresIn: '24h',
           issuer: 'About Tech',
@@ -138,6 +157,54 @@ app.post("/api/login", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+// access Token 일치 유저 데이터 조회 ======================================
+app.get("/api/accessToken", async (req, res) => {
+  try {
+    const token = req.cookies.accessToken;
+    const data = jwt.verify(token, process.env.ACCESS_SECRET);
+    console.log("token", data);
+    const sqlQuery = `SELECT * FROM user WHERE email ='${data.email}'`
+
+    db.query(await sqlQuery, (err, result) => {
+      console.log("토큰 일치 유저 :", result);
+      const {password, ...others} = result[0];
+      res.status(200).json(others);
+    })
+  } catch (err) { 
+    res.status(500).json(err);
+  }
+});
+
+// access Token 새로 발급 ==============================================
+app.get("/api/refreshToken", async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken;
+    const data = jwt.verify(token, process.env.REFRESH_SECRET)
+    const sqlQuery = `SELECT * FROM user WHERE email ='${data.email}'`
+
+    db.query(await sqlQuery, (err, result) => {
+      const accessToken = jwt.sign({
+        id: result[0].id,
+        name: result[0].name,
+        email: result[0].email,
+      }, process.env.ACCESS_SECRET, {
+        expiresIn: '1m',
+        issuer: 'About Tech',
+      });
+
+      res.cookie("accessToken", accessToken, {
+        secure: false,
+        httpOnly: true,
+      });
+
+      res.status(200).json("Access Token Recreated");
+
+    })
+  } catch (err) {
+    res.status(500).json(err);
+  }
+})
 
 app.listen(process.env.PORT, () => {
   console.log(`server id on ${process.env.PORT}`)

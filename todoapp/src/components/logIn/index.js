@@ -45,8 +45,6 @@ export const LoginPage = () => {
   }
 
   const loginURL = "http://localhost:8080/api/login";
-  const [userData, setUserData] = useState();
-  console.log(userData);
 
   // member login
   const userLogin = async (event) => {
@@ -56,8 +54,7 @@ export const LoginPage = () => {
         {userData: {email: email, password: password}},
         {withCredentials: true}
         );
-      setUserData(response);
-      //console.log("현존 데이터 :", response.data[0]);
+      console.log("데이터", response);
     } catch (err) {
       console.log("LOGIN_ERR :", err);
     }

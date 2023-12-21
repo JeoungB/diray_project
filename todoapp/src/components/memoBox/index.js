@@ -8,22 +8,6 @@ const MemoBox = ({ contents, data }) => {
   const dispatch = useDispatch();
   const {user} = useSelector((state) => state);
 
-  //console.log("redux data:", contents);
-  //console.log("SQL data:", data);
-
-  const loginData = () => {
-    if(contents.length !== 0) {
-      console.log("SQL 비었음")
-      return contents; 
-    }
-    if(data.length !== 0) {
-      console.log("리덕스 비었음")
-      return data;
-    }
-  }
-
-  loginData();
-
   const clickCheck = (id) => {
     let newData = contents.map((contents) => {
       if (contents.id === id) {
