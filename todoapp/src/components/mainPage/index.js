@@ -8,14 +8,66 @@ import axios from "axios";
 
 const MainPage = () => {
 
-  const {contents} = useSelector((state) => state);
+  const refreshURL = "http://localhost:8080/api/refreshToken";
+  const accessURL = "http://localhost:8080/api/accessToken";
 
-  const [data, setData] = useState([{
+  const refreshToken = async () => {
+    try{
+      const response = await axios.get(refreshURL, {withCredentials: true})
+      console.log("refreshToken", response);
+    } catch (err) { 
+      console.log(err);
+    }
+  }
+
+  const accessToken = async () => {
+    try {
+      const response = await axios.get(accessURL, {withCredentials: true})
+      console.log("accessToken", response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const contents = useSelector((state) => state.user.contents);
+  const user = useSelector((state) => state.user.user);
+
+  const [data, setData] = useState([
+    {
     id: "1",
     title: "회원 데이터",
     content: "로그인 데이터 입니다.",
     important: false
-  }]);
+  },
+    {
+      id: "2",
+      title: "테스트 데이터",
+      content: "테스트 데이터 입니다.",
+      important: false
+    }
+  ]);
+
+  const [memoContents, setmemoContents] = useState([]);
+
+  // 이 함수에서 data 대신 서버에서 가져온 데이터로 수정.
+  const checkData = () => {
+    if(!user) {
+      console.log("게스트 데이터 없다")
+      setmemoContents(data);
+    }
+
+    if(data.length === 0) {
+      console.log("회원 데이터 없다.")
+      setmemoContents(contents);
+    }
+  }
+
+  console.log("memoContents", memoContents)
+  console.log("data", data)
+
+  useEffect(() => {
+    checkData();
+  }, [])
 
   const navigate = useNavigate();
 
@@ -25,19 +77,21 @@ const MainPage = () => {
   // 검색 데이터 보내는 함수
   const handleSubmit = (event) => {
     event.preventDefault();
-    searchDatas(contents);
+    searchDatas(memoContents);
   };
   
   useLayoutEffect(() => {
     // 검색 데이터 세션스토리지 저장
     setSearchValue(sessionStorage.getItem("searchData"));
+    // refreshToken();
+    // accessToken();
   }, []);
 
-  const searchDatas = (contents) => {
-    contents = contents.filter((contents) => {
-      return contents.title.indexOf(searchValue) > -1; // 한 문자만 일치해도 검색 하도록 수정.
+  const searchDatas = (memoContents) => {
+    memoContents = memoContents.filter((memoContents) => {
+      return memoContents.title.indexOf(searchValue) > -1; // 한 문자만 일치해도 검색 하도록 수정.
     });
-    return <MemoBox contents={contents}/>;
+    return <MemoBox contents={memoContents}/>;
   };
 
   const handleSearch = (event) => {
@@ -69,13 +123,13 @@ const MainPage = () => {
       </form>
 
       {searchValue ? (
-        searchDatas(contents)
+        searchDatas(memoContents)
       ) : (
-        <MemoBox contents={contents} data={data} />
+        <MemoBox contents={memoContents} />
       )}
         </div>
     </div>
   );
 };
 
-export default React.memo(MainPage);
+export default MainPage;

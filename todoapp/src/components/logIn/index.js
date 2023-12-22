@@ -3,7 +3,9 @@ import { LoginContext } from '../../context/LoginState';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getGestUser} from '../../reducers/user';
+import {login} from '../../reducers/isLogin';
 import axios from 'axios';
+import NotLogin from '../notLogin';
 
 export const LoginPage = () => {
 
@@ -54,7 +56,11 @@ export const LoginPage = () => {
         {userData: {email: email, password: password}},
         {withCredentials: true}
         );
-      console.log("데이터", response);
+      console.log("데이터", response.status);
+      if(response.status === 200) {
+        dispatch(login(true))
+        navigate("/main")
+      }
     } catch (err) {
       console.log("LOGIN_ERR :", err);
     }

@@ -5,53 +5,54 @@ import MainPage from "./components/mainPage";
 import { WritePage } from "./components/writePage";
 import { LoginPage } from "./components/logIn";
 import { SingInPage } from "./components/singIn";
-import { useSelector } from "react-redux";
-import Loding from "./components/loding";
+import { useDispatch, useSelector } from "react-redux";
+import NotLogin from "./components/notLogin";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import {login} from '../src/reducers/isLogin';
+import {logout} from '../src/reducers/isLogin';
 
 function App() {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
+  const isLogin  = useSelector((state) => state.login.isLogin);
+  const TOKEN_LOGIN_URL = "http://localhost:8080/api/isLogin";
 
-  const refreshURL = "http://localhost:8080/api/refreshToken";
-  const accessURL = "http://localhost:8080/api/accessToken";
-  const { user } = useSelector((state) => state);
-  const [token, setToken] = useState();
-
-  const refreshToken = async () => {
-    try{
-      const response = axios.get(refreshURL, {withCredentials: true})
-      console.log("refreshToken", response);
-    } catch (err) { 
-      console.log(err);
-    }
-  }
-
-  const accessToken = async () => {
+  // 토큰 존재 여부에 따른 로그인 유지.
+  const tokenLoginState = async () => {
     try {
-      const response = await axios.get(accessURL, {withCredentials: true})
-      console.log("accessToken", response);
-      setToken(response.data);
+      const loginState = await axios.get(TOKEN_LOGIN_URL, {withCredentials: true});
+      console.log(loginState);
+      if(loginState.data === true) {
+        dispatch(login(true));
+      }
+
+      if(loginState.data === false) {
+        dispatch(login(false));
+      }
     } catch (err) {
-      console.log(err);
+      console.log(err)
     }
   }
+
 
   useEffect(() => {
-    refreshToken();
-    accessToken();
+    tokenLoginState();
   }, [])
-  
+
+  const D = true
+
   return (
     <div className="App">
       <Routes>
-        {token || user ? (
+        { D ? (
           <Route path="/" element={<DefaultLayout />}>
             <Route path="main" element={<MainPage />} />
-            <Route path="write" element={<WritePage token={token} />} />
+            <Route path="write" element={<WritePage />} />
           </Route>
         ) : (
           ["/main", "/write"].map((path) => (
-            <Route path={path} key={path} element={<Loding />} />
+            <Route path={path} key={path} element={<NotLogin />} />
           ))
         )}
         <Route index element={<LoginPage />} />

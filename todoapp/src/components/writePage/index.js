@@ -1,15 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addList } from "../../reducers/user";
 import axios from "axios";
 
-export const WritePage = ({token}) => {
+export const WritePage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const {user} = useSelector((state) => state);
   const dispatch = useDispatch();
   const WRITE_API = "http://localhost:8080/api/createMemo";
+  const user = useSelector((state) => state.user.user);
   let day = new Date();
+
+  const [token, setToken] = useState();
+
+  const accessURL = "http://localhost:8080/api/accessToken";
+
+  // const accessToken = async () => {
+  //   try {
+  //     const response = await axios.get(accessURL, {withCredentials: true})
+  //     console.log("accessToken", response);
+  //     setToken(response.data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //     accessToken();
+  // }, [])
 
   // 새로운 메모
   const handleSubmit = async (event) => {
@@ -28,21 +46,19 @@ export const WritePage = ({token}) => {
       dispatch(addList(newMemo));
     }
 
-    if(token) {
-      console.log("토큰 존재", token);
-      try{
-        await axios.post(WRITE_API, {
-          email : token.email,
-          content : newMemo,
-        })
-      } catch(err) {
-        console.log("write Err", err);
-      }
-    }
+    // if(token) {
+    //   console.log("토큰 존재", token);
+    //   try{
+    //     await axios.post(WRITE_API, {
+    //       email : token.email,
+    //       content : newMemo,
+    //     })
+    //   } catch(err) {
+    //     console.log("write Err", err);
+    //   }
+    // }
 
   };
-
-  const { contents } = useSelector((state) => state);
 
   const textAreaStyle = {
     width: "100%",

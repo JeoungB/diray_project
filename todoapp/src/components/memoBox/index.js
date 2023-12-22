@@ -3,10 +3,10 @@ import "./memoBox.css";
 import { useDispatch, useSelector } from "react-redux";
 import { updateList } from "../../reducers/user";
 
-const MemoBox = ({ contents, data }) => {
+const MemoBox = ({ contents}) => {
 
   const dispatch = useDispatch();
-  const {user} = useSelector((state) => state);
+  const user = useSelector((state) => state.user.user);
 
   const clickCheck = (id) => {
     let newData = contents.map((contents) => {
@@ -26,7 +26,7 @@ const MemoBox = ({ contents, data }) => {
 
   return (
     <div className="ListBoX-Container">
-      {user ? (
+      {
         contents.map((contents) => (
           <div className="ListBox" key={contents.id} style={getStyle(contents.important)}>
             <div className="Title">{contents.title}</div>
@@ -40,21 +40,7 @@ const MemoBox = ({ contents, data }) => {
             <button>X</button>
           </div>
         ))
-      ) : (
-        data.map((data) => (
-          <div className="ListBox" key={data.id} style={getStyle(data.important)}>
-            <div className="Title">{data.title}</div>
-            <div className="Content">{data.content}</div>
-            <input
-              name="check-box"
-              type="checkBox"
-              defaultChecked={false}
-              onClick={() => clickCheck(data.id)}
-            />
-            <button>X</button>
-          </div>
-        ))
-      )}
+      }
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { createStore } from "redux";
+import { combineReducers, createStore } from "redux";
 import userReducer from "../reducers/user";
 import loginReducer from "../reducers/isLogin";
 import storage from "redux-persist/lib/storage";
@@ -8,10 +8,19 @@ import { persistStore, persistReducer } from "redux-persist";
 const persistConfig = {
     key: 'root',
     storage: storageSession,
-    whitelist: ["user", "contents"],
+    whitelist: ["user", "contents"]
 };
 
-const persistedReducer = persistReducer(persistConfig, userReducer);
+const authPersistConfigs = {
+    key: 'auth',
+    storage,
+    whitelist: ["isLogin"],
+};
 
-export const store = createStore(persistedReducer);
+const rootReducer = combineReducers({
+    user : persistReducer(persistConfig, userReducer),
+    login : persistReducer(authPersistConfigs, loginReducer)
+});
+
+export const store = createStore(rootReducer);
 export const persistor = persistStore(store);

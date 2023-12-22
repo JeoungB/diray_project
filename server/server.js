@@ -158,19 +158,19 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// access Token 일치 유저 데이터 조회 ======================================
+// access Token 인증 ======================================
 app.get("/api/accessToken", async (req, res) => {
-  try {
     const token = req.cookies.accessToken;
     const data = jwt.verify(token, process.env.ACCESS_SECRET);
-    console.log("token", data);
     const sqlQuery = `SELECT * FROM user WHERE email ='${data.email}'`
+    console.log("token", token);
 
-    db.query(await sqlQuery, (err, result) => {
-      console.log("토큰 일치 유저 :", result);
-      const {password, ...others} = result[0];
-      res.status(200).json(others);
-    })
+    try {
+      db.query(await sqlQuery, (err, result) => {
+        console.log("토큰 일치 유저 :", result);
+        const {password, ...others} = result[0];
+        res.status(200).json(others);
+      })
   } catch (err) { 
     res.status(500).json(err);
   }
@@ -178,31 +178,46 @@ app.get("/api/accessToken", async (req, res) => {
 
 // access Token 새로 발급 ==============================================
 app.get("/api/refreshToken", async (req, res) => {
-  try {
     const token = req.cookies.refreshToken;
     const data = jwt.verify(token, process.env.REFRESH_SECRET)
     const sqlQuery = `SELECT * FROM user WHERE email ='${data.email}'`
-
-    db.query(await sqlQuery, (err, result) => {
-      const accessToken = jwt.sign({
-        id: result[0].id,
-        name: result[0].name,
-        email: result[0].email,
-      }, process.env.ACCESS_SECRET, {
-        expiresIn: '1m',
-        issuer: 'About Tech',
-      });
-
-      res.cookie("accessToken", accessToken, {
-        secure: false,
-        httpOnly: true,
-      });
-
-      res.status(200).json("Access Token Recreated");
-
-    })
+    try {
+        db.query(await sqlQuery, (err, result) => {
+          const accessToken = jwt.sign({
+            id: result[0].id,
+            name: result[0].name,
+            email: result[0].email,
+          }, process.env.ACCESS_SECRET, {
+            expiresIn: '1m',
+            issuer: 'About Tech',
+          });
+  
+          res.cookie("accessToken", accessToken, {
+            secure: false,
+            httpOnly: true,
+          });
+    
+          res.status(200).json("Access Token Recreated");
+    
+        })
   } catch (err) {
     res.status(500).json(err);
+  }
+})
+
+app.get("/api/isLogin", (req, res) => {
+  const token = req.cookies.refreshToken;
+  console.log("test ::", token);
+  try {
+    if(token === undefined) {
+      res.json(false);
+    }
+
+    if(token !== undefined) {
+      res.json(true);
+    }
+  } catch (err) { 
+    console.log(err)
   }
 })
 
