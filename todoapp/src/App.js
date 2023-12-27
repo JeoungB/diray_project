@@ -40,12 +40,12 @@ function App() {
     tokenLoginState();
   }, [])
 
-  const D = true
+  const Test = true
 
   return (
     <div className="App">
       <Routes>
-        { D ? (
+        { Test ? (
           <Route path="/" element={<DefaultLayout />}>
             <Route path="main" element={<MainPage />} />
             <Route path="write" element={<WritePage />} />
