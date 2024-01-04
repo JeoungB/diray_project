@@ -1,16 +1,14 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import DefaultLayout from "./components/defaultLayout";
-import MainPage from "./components/mainPage";
 import { WritePage } from "./components/writePage";
 import { LoginPage } from "./components/logIn";
 import { SingInPage } from "./components/singIn";
 import { useDispatch, useSelector } from "react-redux";
 import NotLogin from "./components/notLogin";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import {login} from '../src/reducers/isLogin';
-import {logout} from '../src/reducers/isLogin';
+import { MainPage } from "./components/mainPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -34,11 +32,6 @@ function App() {
       console.log(err)
     }
   }
-
-
-  useEffect(() => {
-    tokenLoginState();
-  }, [])
 
   const Test = true
 

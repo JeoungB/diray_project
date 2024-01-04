@@ -1,10 +1,9 @@
-import React from "react";
-import "./memoBox.css";
+import React, { memo } from "react";
+//import "./memoBox.css";
 import { useDispatch, useSelector } from "react-redux";
 import { updateList } from "../../reducers/user";
 
-const MemoBox = ({ contents}) => {
-
+export const MemoBox = ({ contents, memberContents }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
 
@@ -16,33 +15,59 @@ const MemoBox = ({ contents}) => {
       return contents;
     });
     dispatch(updateList(newData));
+    // 클릭 할 때마다 새로운 배열 데이터 서버에 저장.
+    console.log("datas", newData);
   };
 
   const getStyle = (important) => {
     return {
-      border: important ? "3px solid black" : "1px solid black",
+      border: important ? "1px solid black" : "3px solid black",
     };
   };
 
   return (
     <div className="ListBoX-Container">
-      {
-        contents.map((contents) => (
-          <div className="ListBox" key={contents.id} style={getStyle(contents.important)}>
-            <div className="Title">{contents.title}</div>
-            <div className="Content">{contents.content}</div>
-            <input
-              name="check-box"
-              type="checkBox"
-              defaultChecked={false}
-              onClick={() => clickCheck(contents.id)}
-            />
-            <button>X</button>
-          </div>
-        ))
-      }
+      {user ? (
+        <div>
+          {contents?.map((contents) => (
+            <div
+              className="ListBox"
+              key={contents.id}
+              style={getStyle(contents.important)}
+            >
+              <div className="Title">{contents.title}</div>
+              <div className="Content">{contents.content}</div>
+              <input
+                name="check-box"
+                type="checkBox"
+                defaultChecked={false}
+                onClick={() => clickCheck(contents.id)}
+              />
+              <button>X</button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div>
+          {memberContents?.map((memberContents) => (
+            <div
+              className="ListBox"
+              key={memberContents.id}
+              style={getStyle(memberContents.important)}
+            >
+              <div className="Title">{memberContents.title}</div>
+              <div className="Content">{memberContents.content}</div>
+              <input
+                name="check-box"
+                type="checkBox"
+                defaultChecked={false}
+                onClick={() => clickCheck(memberContents.id)}
+              />
+              <button>X</button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
-
-export default MemoBox;

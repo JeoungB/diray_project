@@ -38,7 +38,7 @@ export const WritePage = () => {
       title: title,
       content: content,
       dateTime : day.toLocaleDateString(),
-      important: false,
+      important: 0,
     };
 
     if(user) {

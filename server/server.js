@@ -29,15 +29,6 @@ const db = mysql.createConnection({
 
 db.connect();
 
-// 테스트 용 디비 데이터 전송 ===========================================================
-app.get("/api", async (req, res) => {
-  const sqlQuery = "SELECT * FROM user";
-  db.query(await sqlQuery, (err, result) => {
-    res.send({ result });
-    //console.log("data :", result);
-  });
-});
-
 // 회원가입 ==============================================================
 app.post("/api/singin", async (req, res) => {
   try {
@@ -179,47 +170,73 @@ app.get("/api/accessToken", async (req, res) => {
 // access Token 새로 발급 ==============================================
 app.get("/api/refreshToken", async (req, res) => {
     const token = req.cookies.refreshToken;
-    const data = jwt.verify(token, process.env.REFRESH_SECRET)
-    const sqlQuery = `SELECT * FROM user WHERE email ='${data.email}'`
-    try {
-        db.query(await sqlQuery, (err, result) => {
-          const accessToken = jwt.sign({
-            id: result[0].id,
-            name: result[0].name,
-            email: result[0].email,
-          }, process.env.ACCESS_SECRET, {
-            expiresIn: '1m',
-            issuer: 'About Tech',
-          });
-  
-          res.cookie("accessToken", accessToken, {
-            secure: false,
-            httpOnly: true,
-          });
+        console.log("리프레쉬 토큰", token);
+      const data = jwt.verify(token, process.env.REFRESH_SECRET)
+      const sqlQuery = `SELECT * FROM user WHERE email ='${data.email}'`
+      try {
+          db.query(await sqlQuery, (err, result) => {
+            const accessToken = jwt.sign({
+              id: result[0].id,
+              name: result[0].name,
+              email: result[0].email,
+            }, process.env.ACCESS_SECRET, {
+              expiresIn: '1m',
+              issuer: 'About Tech',
+            });
     
-          res.status(200).json("Access Token Recreated");
-    
-        })
-  } catch (err) {
-    res.status(500).json(err);
-  }
+            res.cookie("accessToken", accessToken, {
+              secure: false,
+              httpOnly: true,
+            });
+      
+            res.status(200).json("Access Token Recreated");
+      
+          })
+    } catch (err) {
+      res.status(500).json(err);
+    } 
 })
 
+// 토큰 여부에 따른 로그인 상태값 =======================================
 app.get("/api/isLogin", (req, res) => {
+  // 지금은 refreshToken으로 인증 하는중
+  // accessToken으로 인증하는 방식으로 수정 요구.
+  // 인증은 accessToken으로
   const token = req.cookies.refreshToken;
   console.log("test ::", token);
-  try {
     if(token === undefined) {
       res.json(false);
-    }
+    };
 
     if(token !== undefined) {
       res.json(true);
-    }
-  } catch (err) { 
-    console.log(err)
+    };
+});
+
+// api 이름은 카멜케이스로 하는 것인지 확인.
+app.get("/api/getMemberData", async (req, res) => {
+  //const email = req.body.email;
+
+  const token = req.cookies.accessToken;
+  if(token === undefined) {
+    res.json(false);
+  } else if (token !== undefined) {
+    const data = jwt.verify(token, process.env.ACCESS_SECRET);
+    const sqlQuery = `SELECT * FROM memo_list WHERE email ='${data.email}'`;
+  
+    try {
+      db.query(await sqlQuery, (err, result) => {
+        if(err) throw err;
+  
+        console.log("memberDatas", result);
+        res.json(result);
+      });
+    } catch (err) {
+      console.log(err);
+    };
   }
-})
+
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`server id on ${process.env.PORT}`)
