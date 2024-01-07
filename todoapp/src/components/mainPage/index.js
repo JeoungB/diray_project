@@ -76,7 +76,9 @@ useEffect(() => {
       return data.title.indexOf(searchValue) > -1; // 한 문자만 일치해도 검색 하도록 수정.
     });
     return <MemoBox contents={data} memberContents={data}/>;
-    // data도 useState에서 초기화 되기 떄문에 검색해서 나온 Memo들은 여전히 깜박임을 가진다.
+    // data 수정
+    // user 이 있고 없고를 기준으로 member user / guest user 데이터를 useState에 담아서
+    // 검색과 memobox에 전달하는것으로 마무리.
   };
 
   const handleSearch = (event) => {
