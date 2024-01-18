@@ -1,18 +1,18 @@
 import React, { memo } from "react";
 //import "./memoBox.css";
 import { useDispatch, useSelector } from "react-redux";
-import { updateList } from "../../reducers/user";
+import { updateList, deleteList } from "../../reducers/user";
 
-export const MemoBox = ({ contents, memberContents }) => {
+export const MemoBox = ({ mainContents, setEditPopupState }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
 
   const clickCheck = (id) => {
-    let newData = contents.map((contents) => {
-      if (contents.id === id) {
-        contents.important = !contents.important;
+    let newData = mainContents.map((mainContents) => {
+      if (mainContents.id === id) {
+        mainContents.important = !mainContents.important;
       }
-      return contents;
+      return mainContents;
     });
     dispatch(updateList(newData));
     // 클릭 할 때마다 새로운 배열 데이터 서버에 저장.
@@ -25,49 +25,39 @@ export const MemoBox = ({ contents, memberContents }) => {
     };
   };
 
+  const editList = (id) => {
+    setEditPopupState(true);
+    sessionStorage.setItem("editMemo", id);
+  }
+
+  const deleteLists = (id) => {
+    let newData = mainContents.filter(mainContents => mainContents.id !== id);
+    console.log("삭제 후 리스트", newData);
+    if(window.confirm("선택한 메모를 지우시겠습니까?")) {
+      dispatch(deleteList(newData));
+    }
+  }
+
   return (
     <div className="ListBoX-Container">
-      {user ? (
-        <div>
-          {contents?.map((contents) => (
-            <div
-              className="ListBox"
-              key={contents.id}
-              style={getStyle(contents.important)}
-            >
-              <div className="Title">{contents.title}</div>
-              <div className="Content">{contents.content}</div>
-              <input
-                name="check-box"
-                type="checkBox"
-                defaultChecked={false}
-                onClick={() => clickCheck(contents.id)}
-              />
-              <button>X</button>
-            </div>
-          ))}
+      {mainContents?.map((contents) => (
+        <div
+          className="ListBox"
+          key={contents.id}
+          style={getStyle(contents.important)}
+        >
+          <div className="Title">{contents.title}</div>
+          <div className="Content">{contents.content}</div>
+          <input
+            name="check-box"
+            type="checkBox"
+            defaultChecked={false}
+            onClick={() => clickCheck(contents.id)}
+          />
+          <button onClick={() => deleteLists(contents.id)}>X</button>
+          <button onClick={() => editList(contents.id)}>수정하기</button>
         </div>
-      ) : (
-        <div>
-          {memberContents?.map((memberContents) => (
-            <div
-              className="ListBox"
-              key={memberContents.id}
-              style={getStyle(memberContents.important)}
-            >
-              <div className="Title">{memberContents.title}</div>
-              <div className="Content">{memberContents.content}</div>
-              <input
-                name="check-box"
-                type="checkBox"
-                defaultChecked={false}
-                onClick={() => clickCheck(memberContents.id)}
-              />
-              <button>X</button>
-            </div>
-          ))}
-        </div>
-      )}
+      ))}
     </div>
   );
 };

@@ -38,7 +38,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        { Test ? (
+        { isLogin ? (
           <Route path="/" element={<DefaultLayout />}>
             <Route path="main" element={<MainPage />} />
             <Route path="write" element={<WritePage />} />

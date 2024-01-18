@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { LoginContext } from '../../context/LoginState';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getGestUser} from '../../reducers/user';
+import { deleteList, getGestUser, logout} from '../../reducers/user';
 import {login} from '../../reducers/isLogin';
 import axios from 'axios';
 import NotLogin from '../notLogin';
@@ -11,6 +11,7 @@ export const LoginPage = () => {
 
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const user = useSelector((state) => state.user.user);
 
   const navigate = useNavigate();
 
@@ -23,6 +24,13 @@ export const LoginPage = () => {
   const popUpStyle = {
     display : namePopUp ? "block" : "none",
   }
+
+  useEffect(() => {
+    if(user) {
+      dispatch(login(false));
+      dispatch(logout());
+    }
+  }, [])
 
   // 게스트 로그인 팝업
   const loginHandler = (event) => {
@@ -39,6 +47,7 @@ export const LoginPage = () => {
   // 게스트 로그인
   const geustNameHandler = () => {
     dispatch(getGestUser(geustName));
+    dispatch(login(true));
     navigate("/main");
   }
 
@@ -58,8 +67,8 @@ export const LoginPage = () => {
         );
       console.log("데이터", response.status);
       if(response.status === 200) {
-        dispatch(login(true))
-        navigate("/main")
+        dispatch(login(true));
+        navigate("/main");
       }
     } catch (err) {
       console.log("LOGIN_ERR :", err);

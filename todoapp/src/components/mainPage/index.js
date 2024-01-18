@@ -5,22 +5,21 @@ import { MemoBox } from "../memoBox";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
-import Loding from "../loding";
 import { addList } from "../../reducers/user";
-import { createList } from "../../reducers/memberUser";
+import { EditPage } from "../editPage";
 
 export const MainPage = () => {
   const refreshURL = "http://localhost:8080/api/refreshToken";
   const accessURL = "http://localhost:8080/api/accessToken";
   const GET_MEMBER_DATA = "http://localhost:8080/api/getMemberData";
 
+  // redux 게스트 user data
   const contents = useSelector((state) => state.user.contents);
-  const memberContents = useSelector((state) => state.memberUSer.contents);
   const user = useSelector((state) => state.user.user);
 
   const dispatch = useDispatch();
 
-  const [data, setData] = useState();
+  const [mainContents, setMainContents] = useState();
 
   // 게스트 유저가 없는 경우에 토큰 실행.
   const refreshToken = async () => {
@@ -40,9 +39,7 @@ export const MainPage = () => {
       await axios.get(GET_MEMBER_DATA, {withCredentials: true})
       .then((res) => {
         console.log(res.data)
-        if(memberContents.length === 0) {
-          dispatch(createList(res.data))
-        }
+        setMainContents(res.data);
       })
     } catch (err) {
       console.log(err);
@@ -50,13 +47,11 @@ export const MainPage = () => {
 }
 
 useEffect(() => {
-  if(!user) {
-    setData(memberContents);
-  } 
-  if (user) {
-    setData(contents);
+  if(user) {
+    setMainContents(contents);
+  } else if (!user) {
+    checkData();
   }
-  console.log("memberContents", memberContents);
 }, [])
 
   useLayoutEffect(() => {
@@ -71,11 +66,11 @@ useEffect(() => {
   // 검색 State
   const [searchValue, setSearchValue] = useState(searchData);
 
-  const searchDatas = (data) => {
-    data = data.filter((data) => {
-      return data.title.indexOf(searchValue) > -1; // 한 문자만 일치해도 검색 하도록 수정.
+  const searchDatas = (mainContents) => {
+    mainContents = mainContents.filter((mainContents) => {
+      return mainContents.title.indexOf(searchValue) > -1; // 한 문자만 일치해도 검색 하도록 수정.
     });
-    return <MemoBox contents={data} memberContents={data}/>;
+    return <MemoBox mainContents={mainContents}/>;
     // data 수정
     // user 이 있고 없고를 기준으로 member user / guest user 데이터를 useState에 담아서
     // 검색과 memobox에 전달하는것으로 마무리.
@@ -85,6 +80,8 @@ useEffect(() => {
     setSearchValue(event.target.value);
     sessionStorage.setItem("searchData", event.target.value);
   };
+
+  const [editPopupState, setEditPopupState] = useState(false);
 
   return (
     <div className="MainPage">
@@ -101,11 +98,15 @@ useEffect(() => {
           ></input>
         </form>
 
-        {searchValue && data ? (
-          searchDatas(data)
+        {searchValue && mainContents ? (
+          searchDatas(mainContents)
         ) : (
-          <MemoBox contents={contents} memberContents={memberContents} />
+          <MemoBox mainContents={mainContents} setEditPopupState={setEditPopupState} />
         )}
+
+          {editPopupState && mainContents ? (
+            <EditPage mainContents={mainContents} setEditPopupState={setEditPopupState} />
+          ) : ""}
       </div>
     </div>
   );
