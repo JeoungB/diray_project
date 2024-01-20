@@ -10,6 +10,7 @@ export const EditPage = ({ mainContents, setEditPopupState }) => {
   const [editContent, setEditContent] = useState();
   const dispatch = useDispatch();
 
+  // 그대로 가져올 메모
   const editMemo = () => {
     const thisMemo = mainContents.filter((contents) => contents.id === memoId);
     setCurrentTitle(thisMemo[0].title);
