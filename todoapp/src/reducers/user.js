@@ -42,10 +42,10 @@
           };
 
           case DELETE:
-            return {
-              ...state,
-              contents: action.data,
-            };
+           return {
+            ...state,
+            contents : state.contents.filter(contents => contents.id !== action.data),
+           };
 
           case LOGOUT:
             return {

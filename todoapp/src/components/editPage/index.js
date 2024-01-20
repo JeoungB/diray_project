@@ -15,7 +15,7 @@ export const EditPage = ({ mainContents, setEditPopupState }) => {
     const thisMemo = mainContents.filter((contents) => contents.id === memoId);
     setCurrentTitle(thisMemo[0].title);
     setCurrentContent(thisMemo[0].content);
-    setEditTitle(thisMemo[0].title);
+    setEditTitle(thisMemo[0].title); 
     setEditContent(thisMemo[0].content);
   };
 

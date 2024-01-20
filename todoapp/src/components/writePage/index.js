@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addList } from "../../reducers/user";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export const WritePage = () => {
@@ -14,6 +15,8 @@ export const WritePage = () => {
   const [token, setToken] = useState();
 
   const accessURL = "http://localhost:8080/api/accessToken";
+
+  const navigate = useNavigate();
 
   // const accessToken = async () => {
   //   try {
@@ -57,7 +60,7 @@ export const WritePage = () => {
     //     console.log("write Err", err);
     //   }
     // }
-
+    navigate("/main");
   };
 
   const textAreaStyle = {

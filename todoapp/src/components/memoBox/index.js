@@ -1,7 +1,8 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 //import "./memoBox.css";
 import { useDispatch, useSelector } from "react-redux";
 import { updateList, deleteList } from "../../reducers/user";
+import { MemoButton } from "../memoButton";
 
 export const MemoBox = ({ mainContents, setEditPopupState }) => {
   const dispatch = useDispatch();
@@ -30,13 +31,13 @@ export const MemoBox = ({ mainContents, setEditPopupState }) => {
     sessionStorage.setItem("editMemo", id);
   }
 
-  const deleteLists = (id) => {
-    let newData = mainContents.filter(mainContents => mainContents.id !== id);
-    console.log("삭제 후 리스트", newData);
-    if(window.confirm("선택한 메모를 지우시겠습니까?")) {
-      dispatch(deleteList(newData));
-    }
-  }
+  // const deleteLists = (id) => {
+  //   let newData = mainContents.filter(mainContents => mainContents.id !== id);
+  //   console.log("삭제 후 리스트", newData);
+  //   if(window.confirm("선택한 메모를 지우시겠습니까?")) {
+  //     dispatch(deleteList(newData));
+  //   }
+  // }
 
   return (
     <div className="ListBoX-Container">
@@ -54,7 +55,7 @@ export const MemoBox = ({ mainContents, setEditPopupState }) => {
             defaultChecked={false}
             onClick={() => clickCheck(contents.id)}
           />
-          <button onClick={() => deleteLists(contents.id)}>X</button>
+          <MemoButton mainContents={mainContents} contentsId={contents.id} />
           <button onClick={() => editList(contents.id)}>수정하기</button>
         </div>
       ))}
