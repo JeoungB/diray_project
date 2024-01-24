@@ -1,5 +1,5 @@
 
-  const initialUser = {
+ const initialUser = {
     user: '',
     contents: [],
   };
@@ -9,6 +9,7 @@
   const UPDATE_LIST = "UPDATE_LIST";
   const DELETE = "DELETE";
   const LOGOUT = "LOGOUT";
+  const NULLCONTENT = "NULLCONTENT";
 
   export const getGestUser = data => ({type: GEUST_USER, data});
   export const addList = data => ({type: ADD_LIST, data});
@@ -17,6 +18,13 @@
   export const logout = () => ({type: LOGOUT});
 
   const userReducer = (state = initialUser, action) => {
+
+      const importantMemo = state.contents.filter((newData) => newData.important === true);
+      const notImportantMemo = state.contents.filter((newData) => newData.important === false);
+      notImportantMemo.sort((a, b) => new Date(a.timestemp) - new Date(b.timestemp))
+      const newDatas = importantMemo.concat(notImportantMemo);
+      const newMemos = new Set(newDatas);
+    
     switch(action.type) {
       case GEUST_USER:
         return {
@@ -31,6 +39,8 @@
             id: action.data.id,
             title: action.data.title,
             content: action.data.content,
+            timestemp : action.data.timestemp,
+            datetime : action.data.datetime,
             important: action.data.important,
           })
         };
@@ -38,7 +48,7 @@
         case UPDATE_LIST:
           return {
             ...state,
-            contents: action.data,
+            contents: [...newMemos],
           };
 
           case DELETE:

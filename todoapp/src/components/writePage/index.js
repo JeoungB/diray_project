@@ -36,12 +36,16 @@ export const WritePage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const today = new Date();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
     let newMemo = {
       id: Date.now(),
       title: title,
       content: content,
-      dateTime : day.toLocaleDateString(),
-      important: 0,
+      timestemp : today,
+      datetime : date,
+      important: false,
     };
 
     if(user) {

@@ -26,10 +26,8 @@ export const LoginPage = () => {
   }
 
   useEffect(() => {
-    if(user) {
       dispatch(login(false));
       dispatch(logout());
-    }
   }, [])
 
   // 게스트 로그인 팝업

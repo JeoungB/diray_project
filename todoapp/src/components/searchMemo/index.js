@@ -1,12 +1,25 @@
-import React, { useState } from "react";
-//import "./memoBox.css";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 import { updateList } from "../../reducers/user";
+import { useDispatch } from "react-redux";
 import { MemoButton } from "../memoButton";
 
-export const MemoBox = ({ mainContents, setEditPopupState }) => {
+export const SearchMemo = ({
+  mainContents,
+  setEditPopupState,
+  searchValue,
+}) => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
+
+  const searchDatas = () => {
+    mainContents = mainContents.filter((mainContents) => {
+      return mainContents.title.indexOf(searchValue) > -1; // 한 문자만 일치해도 검색 하도록 수정.
+    });
+  };
+
+  const editList = (id) => {
+    setEditPopupState(true);
+    sessionStorage.setItem("editMemo", id);
+  };
 
   const clickCheck = (id) => {
     let newData = mainContents.map((mainContents) => {
@@ -18,19 +31,16 @@ export const MemoBox = ({ mainContents, setEditPopupState }) => {
     dispatch(updateList(newData));
   };
 
+  searchDatas();
+
   const getStyle = (important) => {
     return {
       border: important ? "1px solid black" : "3px solid black",
     };
   };
 
-  const editList = (id) => {
-    setEditPopupState(true);
-    sessionStorage.setItem("editMemo", id);
-  }
-
   return (
-    <div className="ListBoX-Container">
+    <div className="searchMemo">
       {mainContents?.map((contents) => (
         <div
           className="ListBox"
@@ -39,7 +49,6 @@ export const MemoBox = ({ mainContents, setEditPopupState }) => {
         >
           <div className="Title">{contents.title}</div>
           <div className="Content">{contents.content}</div>
-          <div className="Datetime">{contents.datetime}</div>
           <input
             name="check-box"
             type="checkBox"

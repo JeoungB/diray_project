@@ -1,12 +1,12 @@
 /* eslint-disable array-callback-return */
-import React, { memo, useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 //import "./mainPage.css";
 import { MemoBox } from "../memoBox";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
-import { addList } from "../../reducers/user";
 import { EditPage } from "../editPage";
+import { SearchMemo } from "../searchMemo";
 
 export const MainPage = () => {
   const refreshURL = "http://localhost:8080/api/refreshToken";
@@ -65,13 +65,6 @@ useEffect(() => {
   // 검색 State
   const [searchValue, setSearchValue] = useState(searchData);
 
-  const searchDatas = (mainContents) => {
-    mainContents = mainContents.filter((mainContents) => {
-      return mainContents.title.indexOf(searchValue) > -1; // 한 문자만 일치해도 검색 하도록 수정.
-    });
-    return <MemoBox mainContents={mainContents} setEditPopupState={setEditPopupState}/>;
-  };
-
   const handleSearch = (event) => {
     setSearchValue(event.target.value);
     sessionStorage.setItem("searchData", event.target.value);
@@ -95,10 +88,11 @@ useEffect(() => {
         </form>
 
         {searchValue && mainContents ? (
-          searchDatas(mainContents)
-        ) : (
+          // searchDatas(mainContents)
+          <SearchMemo mainContents={mainContents} setEditPopupState={setEditPopupState} searchValue={searchValue} />
+        ) : mainContents ? (
           <MemoBox mainContents={mainContents} setEditPopupState={setEditPopupState} />
-        )}
+        ) : ""}
 
           {editPopupState && mainContents ? (
             <EditPage mainContents={mainContents} setEditPopupState={setEditPopupState} />
