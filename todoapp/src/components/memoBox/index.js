@@ -56,6 +56,7 @@ export const MemoBox = ({ mainContents, setEditPopupState }) => {
             onClick={() => clickCheck(contents.id)}
           />
           <MemoButton mainContents={mainContents} contentsId={contents.id} />
+          {/* 컴포넌트 나누기 */}
           <button onClick={() => editList(contents.id)}>수정하기</button>
         </div>
       ))}
