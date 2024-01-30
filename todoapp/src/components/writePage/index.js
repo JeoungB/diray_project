@@ -67,17 +67,43 @@ export const WritePage = () => {
     navigate("/main");
   };
 
-  const textAreaStyle = {
-    width: "100%",
-    height: "100%",
-    resize: "none",
-    outline: "none"
-  }
+  const contentsHandler = (event) => {
+    const divContent = document.getElementById("content").innerHTML;
 
-  const writeStyle = {
+    setContent(divContent);
+  };
+
+  // 이미지 삽입 후 뒤에 br 태그 추가.
+  const imageUploader = (event) => {
+    const file = event.target.files;
+    if(file.length === 0) {
+      return;
+    } else {
+      const reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]);
+  
+      reader.onload = (event) => {
+        const divContent = document.getElementById("content");
+        divContent.style.overflow = "hidden";
+        divContent.style.position = "relative";
+        const image = document.createElement("img");
+        image.setAttribute("src", event.target.result);
+        image.style.position = "relative";
+        image.style.width = "100%";
+        image.style.left = "50%"
+        image.style.transform = "translate(-50%, 0)";
+        divContent.appendChild(image);
+      }
+    }
+  };
+
+  const textAreaStyle = {
     width: "500px",
-    height: "500px"
-  }
+    height: "500px",
+    resize: "none",
+    outline: "none",
+    border : "1px solid black"
+  };
 
   return (
     <div className="WritePage">
@@ -89,15 +115,21 @@ export const WritePage = () => {
           placeholder="제목 입력"
           onChange={(event) => setTitle(event.target.value)}
         ></input>
-        <div style={writeStyle}>
-        <textarea
-          type="text"
+        <div>
+        <input 
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={imageUploader}
+          />
+        <div
+          id="content"
           name="content"
           value={content}
-          placeholder="내용을 입력해 주세요."
-          onChange={(event) => setContent(event.target.value)}
+          contentEditable="true"
+          onInput={contentsHandler}
           style={textAreaStyle}
-        ></textarea>
+        ></div>
         </div>
         <input
           type="submit"

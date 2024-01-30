@@ -47,6 +47,14 @@ export const EditPage = ({ mainContents, setEditPopupState }) => {
     editMemo();
   }, []);
 
+  const textAreaStyle = {
+    width: "500px",
+    height: "500px",
+    resize: "none",
+    outline: "none",
+    border : "1px solid black",
+  };
+
   return (
     <div className="editPage">
         <input
@@ -55,12 +63,14 @@ export const EditPage = ({ mainContents, setEditPopupState }) => {
           defaultValue={currentTitle || ""}
           onChange={(event) => setEditTitle(event.target.value)}
         ></input>
-        <input
+        <div
           name="content"
           placeholder="내용"
           defaultValue={currentContent || ""}
+          dangerouslySetInnerHTML={{ __html: currentContent }}
+          style={textAreaStyle}
           onChange={(event) => setEditContent(event.target.value)}
-        ></input>
+        ></div>
         <button onClick={outEditPage}>취소</button>
         <button onClick={editMemoList}>수정</button>
     </div>
