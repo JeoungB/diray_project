@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addList } from "../../reducers/user";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Editor } from '@toast-ui/react-editor';
+//import '@toast-ui/editor/dist/toastui-editor.css';
 
 export const WritePage = () => {
   const [title, setTitle] = useState("");
@@ -17,6 +19,8 @@ export const WritePage = () => {
   const accessURL = "http://localhost:8080/api/accessToken";
 
   const navigate = useNavigate();
+
+  const editorRef = useRef();
 
   // const accessToken = async () => {
   //   try {
@@ -68,12 +72,12 @@ export const WritePage = () => {
   };
 
   const contentsHandler = (event) => {
-    const divContent = document.getElementById("content").innerHTML;
-
-    setContent(divContent);
+    console.log(editorRef.current.getInstance().getMarkdown());
+    setContent(editorRef.current.getInstance().getMarkdown());
   };
 
-  // 이미지 삽입 후 뒤에 br 태그 추가.
+  // 이미지 미리보기
+  // 이 함수 살려뒀다가 프로필 이미지 설정 같은곳에 써보자.
   const imageUploader = (event) => {
     const file = event.target.files;
     if(file.length === 0) {
@@ -97,18 +101,28 @@ export const WritePage = () => {
     }
   };
 
-  const textAreaStyle = {
-    width: "500px",
-    height: "500px",
-    resize: "none",
-    outline: "none",
-    border : "1px solid black"
-  };
-
   return (
     <div className="WritePage">
       <h1>WritePage</h1>
-        <input
+      <input
+          type="text"
+          name="title"
+          value={title}
+          placeholder="제목 입력"
+          onChange={(event) => setTitle(event.target.value)}
+        ></input>
+      <Editor
+        previewStyle="vertical"
+        height="600px"
+        initialEditType="wysiwyg"
+        hideModeSwitch = "true"
+        useCommandShortcut={false}
+        language="ko-KR"
+        ref={editorRef}
+        onChange={contentsHandler}
+
+      />
+        {/* <input
           type="text"
           name="title"
           value={title}
@@ -121,16 +135,16 @@ export const WritePage = () => {
             name="image"
             accept="image/*"
             onChange={imageUploader}
+            style={fileS}
           />
-        <div
+        <textarea
           id="content"
           name="content"
           value={content}
-          contentEditable="true"
-          onInput={contentsHandler}
+          onChange={contentsHandler}
           style={textAreaStyle}
-        ></div>
-        </div>
+        ></textarea>
+        </div> */}
         <input
           type="submit"
           name="submit"

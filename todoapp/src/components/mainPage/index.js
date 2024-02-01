@@ -95,7 +95,7 @@ useEffect(() => {
         ) : ""}
 
           {editPopupState && mainContents ? (
-            <EditPage mainContents={mainContents} setEditPopupState={setEditPopupState} />
+            <EditPage mainContents={mainContents} setEditPopupState={setEditPopupState} editPopupState={editPopupState} />
           ) : ""}
       </div>
     </div>

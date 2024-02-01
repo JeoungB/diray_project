@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateList } from "../../reducers/user";
 import { MemoButton } from "../memoButton";
+import Parser from "html-react-parser";
+import { Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 
 export const MemoBox = ({ mainContents, setEditPopupState }) => {
   const dispatch = useDispatch();
@@ -38,7 +41,9 @@ export const MemoBox = ({ mainContents, setEditPopupState }) => {
           style={getStyle(contents.important)}
         >
           <div className="Title">{contents.title}</div>
-          <div className="Content">{contents.content}</div>
+          {/* 뷰어 수정하기 바로 적용 안됨 */}
+          {/* <div className="Content">{contents.content}</div> */}
+          <Viewer initialValue={contents.content} />
           <div className="Datetime">{contents.datetime}</div>
           <input
             name="check-box"
