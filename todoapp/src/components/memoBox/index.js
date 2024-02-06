@@ -42,8 +42,8 @@ export const MemoBox = ({ mainContents, setEditPopupState }) => {
         >
           <div className="Title">{contents.title}</div>
           {/* 뷰어 수정하기 바로 적용 안됨 */}
-          {/* <div className="Content">{contents.content}</div> */}
-          <Viewer initialValue={contents.content} />
+          <div className="Content">{contents.content}</div>
+          {/* <Viewer initialValue={contents.content} /> */}
           <div className="Datetime">{contents.datetime}</div>
           <input
             name="check-box"
